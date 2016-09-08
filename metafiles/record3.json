@@ -49,6 +49,13 @@
 		"rating": "low-risk"
 	},
 	{
+		"date": "Aug 10, 2016 17:30:59",
+		"filename": "helper.exe",
+		"action": "files-added",
+		"submit-type": "FG300B3910602113/root",
+		"rating": "low-risk"
+	},
+	{
 		"date": "Sep 6, 2016 17:30:59",
 		"filename": "helper.exe",
 		"action": "files-added",
