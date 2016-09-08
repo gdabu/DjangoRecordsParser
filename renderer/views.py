@@ -6,25 +6,28 @@ import json
 
 # Create your views here.
 
-# def index(request):
-#     return HttpResponse("Hello, world. You're at the renderer index.")
+def period(request):
 
-def period(request):	
-	context = {
-		"title" : "period"
-	}
+	periodType = request.GET.get('periodType');
+	periodVal = request.GET.get('periodVal');
 
-	return render(request, "index.html", context)
+	if(periodType=="hours"):
+		records = mfreader.get_last_x_hours(periodVal)
+	elif(periodType=="days"):
+		records = mfreader.get_last_x_days(periodVal)
+	elif(periodType=="weeks"):
+		records = mfreader.get_last_x_weeks(periodVal)
+	else:
+		records = mfreader.get_all_records()	
+
+	
+	return HttpResponse(json.dumps(records))
 
 def poll(request):
-	context = {
-		"title" : "poll"
-	}
-
-	return render(request, "index.html", context)
+	records = mfreader.get_all_records()	
+	return HttpResponse(json.dumps(records))
 
 def index(request):
-	# name = request.GET.get('name1', '')
 
 	records = mfreader.get_all_records()
 	context = {

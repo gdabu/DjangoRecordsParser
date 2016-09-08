@@ -1,0 +1,19 @@
+.table-striped>tbody>tr.clean{
+	background-color: #E3F2FD;
+}
+
+.table-striped>tbody>tr.low-risk{
+	background-color: #E0F2F1;
+}
+
+.table-striped>tbody>tr.medium-risk{
+	background-color: #FFFDE7;
+}
+
+.table-striped>tbody>tr.high-risk{
+	background-color: #FFF3E0;
+}
+
+.table-striped>tbody>tr.malicious{
+	background-color: #EF9A9A;
+}
