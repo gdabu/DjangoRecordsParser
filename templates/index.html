@@ -16,12 +16,7 @@
     <link href="{% static '/css/fortinet.css' %}" rel="stylesheet" type="text/css">
     <!-- Custom Fonts -->
     <link href="{% static '/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+
 </head>
 
 <body>
@@ -30,28 +25,15 @@
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <a class="navbar-brand" href="index.html">Threat Reader</a>
+                <a class="navbar-brand" href="#"><img src="{% static '/img/logo.png' %}" ></img></a>
             </div>
             <!-- Top Menu Items -->
-            <ul class="nav navbar-right top-nav">
+            <ul id="threat-alert" class="nav navbar-right top-nav">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="label label-danger">New Threat Detected <b class="caret"></b></span></a>
                     <ul class="dropdown-menu message-dropdown">
-                        <li class="message-preview">
-                            <a href="#">
-                                <div class="media">
-                                    <div class="media-body">
-                                        <h5 class="media-heading"><strong>John Smith</strong>
-                                        </h5>
-                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
-                                        <p><span class="label label-default">Alert Badge</span></p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
                         <li class="message-footer">
-                            <a href="#">Read All New Messages</a>
+                            <a id="table-refresh" href="#"><i class="fa fa-refresh"></i>  Refresh Table</a>
                         </li>
                     </ul>
                 </li>
@@ -64,7 +46,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="col-lg-6">
-                            <h2>Contextual Classes</h2>
+                            <h2>Threat Logs</h2>
                         </div>
                         <div class="col-lg-6">
                             <div class="pull-right">
@@ -83,11 +65,11 @@
                             <table id="records-table" class="table table-bordered table-hover table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Filename</th>
-                                        <th>Action</th>
-                                        <th>Submit-Type</th>
-                                        <th>Rating</th>
+                                        <th id="th-date">Date<i class="fa fa-sort pull-right"></i></th>
+                                        <th id="th-filename">Filename</th>
+                                        <th id="th-action">Action</th>
+                                        <th id="th-submittype">Submit-Type</th>
+                                        <th id="th-rating">Rating</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -102,7 +84,6 @@
         </div>
         <!-- /#page-wrapper -->
     </div>
-    <button class="btnz">press</button>
     <!-- /#wrapper -->
     <!-- jQuery -->
     <script src="{% static '/js/jquery.js' %}"></script>
@@ -110,57 +91,133 @@
     <script src="{% static '/js/bootstrap.min.js' %}"></script>
     <!-- Custom Scripts -->
     <script type="text/javascript">
-    var records = {{records|safe}}
-    for (var i = 0; i < records.length; i++) {
-        $("#records-table tbody").append('<tr class="' + records[i].rating + '"><td>' + records[i].date + '</td><td>' + records[i].filename + '</td><td>' + records[i].action + '</td><td>' + records[i]["submit-type"] + '</td><td>' + records[i].rating + '</td></tr>')
-    }
+        $(document).ready(function() {
+            $("#threat-alert").hide();
+        })
     </script>
-    <!-- <script type="text/javascript">
+    <script type="text/javascript">
     $(document).ready(function() {
+        $("#table-refresh").click(function() {
 
-        setInterval(function() {
-            $.ajax({
-                url: "http://localhost:8000/renderer/poll/",
-                dataType: 'json',
+            $("select.form-control option:selected").each(function() {
 
-                success: function(records) {
-                    $("#records-table tbody").empty()
-                    for (var i = 0; i < records.length; i++) {
-                        $("#records-table tbody").append('<tr class="' + records[i].rating + '"><td>' + records[i].date + '</td><td>' + records[i].filename + '</td><td>' + records[i].action + '</td><td>' + records[i]["submit-type"] + '</td><td>' + records[i].rating + '</td></tr>')
+                var selection = $(this).text();
+                var periodType = null;
+                var periodVal = null;
+
+                if (selection == "24 hours") {
+
+                    periodType = "hours";
+                    periodVal = 24;
+
+                } else if (selection == "7 days") {
+
+                    periodType = "days";
+                    periodVal = 7;
+
+                } else if (selection == "4 weeks") {
+
+                    periodType = "weeks";
+                    periodVal = 4;
+
+                }
+
+                $.ajax({
+                    url: "http://localhost:8000/renderer/period/?periodType=" + periodType + "&periodVal=" + periodVal,
+                    dataType: 'json',
+                    success: function(records) {
+                        $("#records-table tbody").empty()
+                        for (var i = 0; i < records.length; i++) {
+                            $("#records-table tbody").append('<tr class="' + records[i].rating + '"><td>' + records[i].date + '</td><td>' + records[i].filename + '</td><td>' + records[i].action + '</td><td>' + records[i]["submit-type"] + '</td><td>' + records[i].rating + '</td></tr>')
+                        }
+                        $("#threat-alert").hide();
+                    },
+                    failure: function(data) {
+                        console.log(data)
                     }
+                })
 
-                },
-                failure: function(data) {
-                    alert(data);
+            })
+        })
+    })
+    </script>
+    <script type="text/javascript">
+        var records = {{ records | safe }}
+        for (var i = 0; i < records.length; i++) {
+            $("#records-table tbody").append('<tr class="' + records[i].rating + '"><td class="records-date">' + records[i].date + '</td><td class="records-filename">' + records[i].filename + '</td><td class="records-action">' + records[i].action + '</td><td class="records-submit-type">' + records[i]["submit-type"] + '</td><td class="records-rating">' + records[i].rating + '</td></tr>')
+        }
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        setInterval(function() {
 
-                },
-                timeout: 2000
-            });
+            $("select.form-control option:selected").each(function() {
+                var selection = $(this).text();
+                var periodType = null;
+                var periodVal = null;
+
+                if (selection == "24 hours") {
+
+                    periodType = "hours";
+                    periodVal = 24;
+
+                } else if (selection == "7 days") {
+
+                    periodType = "days";
+                    periodVal = 7;
+
+                } else if (selection == "4 weeks") {
+
+                    periodType = "weeks";
+                    periodVal = 4;
+
+                }
+
+                current_records_amt = $("#records-table tbody tr").length;
+                console.log(current_records_amt)
+
+                $.ajax({
+                    url: "http://localhost:8000/renderer/poll/?periodType=" + periodType + "&periodVal=" + periodVal,
+                    dataType: 'json',
+
+                    success: function(new_records_amt) {
+                        if (new_records_amt != current_records_amt) {
+                            $("#threat-alert").show();
+                        }
+                    },
+                    failure: function(data) {
+                        console.log(data)
+
+                    },
+                    timeout: 2000
+                });
+
+            })
         }, 10000);
     })
-    </script> -->
+    </script>
     <script type="text/javascript">
 
-    $(".form-control").change(function(){
-        
-        $("select option:selected").each(function(){
-            
-            var selection = $(this).text();    
+    $(".form-control").change(function() {
+
+        $("select.form-control option:selected").each(function() {
+
+            var selection = $(this).text();
             var periodType = null;
             var periodVal = null;
 
-            if(selection == "24 hours"){
-                
+            if (selection == "24 hours") {
+
                 periodType = "hours";
                 periodVal = 24;
 
-            }else if(selection == "7 days"){
-                
+            } else if (selection == "7 days") {
+
                 periodType = "days";
                 periodVal = 7;
 
-            }else if(selection == "4 weeks"){
-                
+            } else if (selection == "4 weeks") {
+
                 periodType = "weeks";
                 periodVal = 4;
 
@@ -172,16 +229,84 @@
                 success: function(records) {
                     $("#records-table tbody").empty()
                     for (var i = 0; i < records.length; i++) {
-                        $("#records-table tbody").append('<tr class="' + records[i].rating + '"><td>' + records[i].date + '</td><td>' + records[i].filename + '</td><td>' + records[i].action + '</td><td>' + records[i]["submit-type"] + '</td><td>' + records[i].rating + '</td></tr>')
+                        $("#records-table tbody").append('<tr class="' + records[i].rating + '"><td class="records-date">' + records[i].date + '</td><td class="records-filename">' + records[i].filename + '</td><td class="records-action">' + records[i].action + '</td><td class="records-submit-type">' + records[i]["submit-type"] + '</td><td class="records-rating">' + records[i].rating + '</td></tr>')
                     }
                 },
                 failure: function(data) {
-                    alert(data);
+                    console.log(data)
                 }
             });
 
         });
     });
+    </script>
+
+    <script type="text/javascript">
+        function sortTable(columnNumber){
+            var rows = $('#records-table tbody  tr').get();
+            rows.sort(function(a, b) {
+
+                var A = $(a).children('td').eq(columnNumber).text().toUpperCase();
+                var B = $(b).children('td').eq(columnNumber).text().toUpperCase();
+
+                if(A < B) {
+                    return -1;
+                }
+
+                if(A > B) {
+                    return 1;
+                }
+
+                return 0;
+
+            });
+
+            $.each(rows, function(index, row) {
+                $('#records-table').children('tbody').append(row);
+            });
+        }
+
+        function sortTableByDate(){
+            var rows = $('#records-table tbody  tr').get();
+            rows.sort(function(a, b) {
+
+                var A = Date.parse($(a).children('td').eq(0).text().toUpperCase());
+                var B = Date.parse($(b).children('td').eq(0).text().toUpperCase());
+
+                if(A < B) {
+                    return -1;
+                }
+
+                if(A > B) {
+                    return 1;
+                }
+
+                return 0;
+
+            });
+
+            $.each(rows, function(index, row) {
+                $('#records-table').children('tbody').append(row);
+            });
+        }
+
+        sortTableByDate()
+
+
+        $("#records-table thead tr th").click(function(){
+            $("#records-table thead tr th i").remove();
+
+            $(this).append('<i class="fa fa-sort pull-right"></i>');
+            
+            var thIndex = $( "#records-table thead tr th" ).index( this );
+            if(thIndex == 0){
+                sortTableByDate()
+            }else{
+                sortTable(thIndex)
+            }
+        })
+        
+
     </script>
 </body>
 

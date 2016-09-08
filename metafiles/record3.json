@@ -14,13 +14,6 @@
 		"rating": "high-risk"
 	},
 	{
-		"date": "Sep 6, 2016 21:30:59",
-		"filename": "helper.exe",
-		"action": "files-added",
-		"submit-type": "FG300B3910602113/root",
-		"rating": "low-risk"
-	},
-	{
 		"date": "Sep 7, 2016 17:30:59",
 		"filename": "helper.exe",
 		"action": "files-added",
@@ -54,27 +47,6 @@
 		"action": "files-added",
 		"submit-type": "FG300B3910602113/root",
 		"rating": "low-risk"
-	},
-	{
-		"date": "Sep 6, 2016 17:30:59",
-		"filename": "helper.exe",
-		"action": "files-added",
-		"submit-type": "FG300B3910602113/root",
-		"rating": "malicious"
-	},
-	{
-		"date": "Sep 6, 2016 17:30:59",
-		"filename": "helper.exe",
-		"action": "files-added",
-		"submit-type": "FG300B3910602113/root",
-		"rating": "malicious"
-	},
-	{
-		"date": "Sep 6, 2016 17:30:59",
-		"filename": "helper.exe",
-		"action": "files-added",
-		"submit-type": "FG300B3910602113/root",
-		"rating": "malicious"
 	},
 	{
 		"date": "Sep 6, 2016 17:30:59",

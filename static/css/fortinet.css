@@ -17,3 +17,12 @@
 .table-striped>tbody>tr.malicious{
 	background-color: #EF9A9A;
 }
+
+#records-table thead tr th{
+	cursor: pointer;
+}
+
+i.fa-sort{
+	padding-top:3px;
+	padding-right: 2px;
+}
